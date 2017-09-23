@@ -12,27 +12,28 @@
 @import "./styles/Transactions.css";
 @import "./styles/Settings.css";
 
-html{
-  font-family: 'Roboto', sans-serif !important;
-  font-weight: 400;
+html,
+body {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif !important;
+  font-weight: bolder;
 }
 
 *:focus {
-    outline: none !important;
-    border-color: inherit;
-    -webkit-box-shadow: none !important;
-    box-shadow: none !important;
+  outline: none !important;
+  border-color: inherit;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
 }
 
-.my_wrapper{
+.my_wrapper {
   padding-left: 200px;
   padding-top: 25px;
-  padding-right: 0; 
-  height: 100vh; 
+  padding-right: 0;
+  height: 100vh;
   overflow: hidden;
 }
 
-.snack{
+.snack {
   position: fixed;
   bottom: -50px;
   left: 200px;
@@ -46,12 +47,12 @@ html{
   text-align: center;
 }
 
-.my_wrapper{
+.my_wrapper {
   width: 95%;
   margin-left: 2.5%;
 }
 
-.mancha{
+.mancha {
   position: fixed;
   top: 0;
   left: 0;
@@ -61,49 +62,49 @@ html{
   z-index: 1000;
 }
 
-.dialog{
+.dialog {
   position: absolute;
   top: 50%;
   left: 50%;
   background-color: #fff;
   width: 400px;
-  padding: 20px 20px 5px 20px;
+  padding: 20px 20px 5px;
   transform: translate(-50%,-50%);
 }
 
-.dialog .header{
+.dialog .header {
   border-bottom: 1px solid #a1be5a;
 }
 
-.dialog .header .title{
+.dialog .header .title {
   font-size: 1.3em;
   letter-spacing: 2px;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
-.dialog .body{
+.dialog .body {
   padding-top: 25px;
 }
 
-.dialog .body .desc{
+.dialog .body .desc {
   font-size: 1em;
   color: #000 !important;
 }
 
-.dialog .body .desc2{
+.dialog .body .desc2 {
   font-size: 1em;
   color: #bdbdbd !important;
 }
 
-.dialog .footer{
+.dialog .footer {
   text-align: center;
   padding-top: 15px;
 }
 
-.dialog .footer .button{
+.dialog .footer .button {
   display: inline-block;
   width: 100px;
-  padding: 10px 20px 10px 20px;
+  padding: 10px 20px;
   text-align: center;
   color: #fff;
   border-radius: 2px;
@@ -112,18 +113,18 @@ html{
   cursor: pointer;
 }
 
-.dialog .footer .btn_cancel{
+.dialog .footer .btn_cancel {
   background-color: #bdbdbd;
 }
 
-.dialog .footer .btn_confirm{
+.dialog .footer .btn_confirm {
   background-color: #a1be5a;
 }
 
-.dialog .inpuText{
+.dialog .inpuText {
   font-size: 1em !important;
 }
 
-.dialog .inpuText::-webkit-input-placeholder{
+.dialog .inpuText::-webkit-input-placeholder {
   font-size: 1em !important;
 }

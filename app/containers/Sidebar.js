@@ -4,6 +4,8 @@ import Wallet from '../utils/wallet';
 
 import { traduction } from '../lang/lang';
 
+const event = require('../utils/eventhandler');
+
 const lang = traduction();
 const wallet = new Wallet();
 
@@ -11,6 +13,9 @@ export default class Sidebar extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      starting: false,
+      running: false,
+      staking: false,
       pathname: props.route.location.pathname,
       active: {
         default: '',
@@ -32,6 +37,9 @@ export default class Sidebar extends Component {
       numpeers: 0,
       networkbestblock: 0
     };
+
+    this.saveAndStopDaemon = this.saveAndStopDaemon.bind(this);
+    this.startDaemon = this.startDaemon.bind(this);
   }
 
   componentDidMount() {
@@ -56,10 +64,10 @@ export default class Sidebar extends Component {
   infoUpdate() {
     const self = this;
     wallet.getblockcount().then((height) => {
-        self.setState({ currentHeight: height });
-      }).catch((error) => {
-        self.setState({ currentHeight: 0 });
-      });
+      self.setState({ currentHeight: height });
+    }).catch((error) => {
+      self.setState({ currentHeight: 0 });
+    });
 
     wallet.getpeerinfo().then((peers) => {
       let bestHeight = 0;
@@ -71,6 +79,23 @@ export default class Sidebar extends Component {
       self.setState({ networkbestblock: bestHeight, numpeers: peers.length });
     }).catch((error) => {
       self.setState({ networkbestblock: 0, numpeers: 0 });
+    });
+
+    wallet.getInfo().then((data) => {
+      if (data && this.state.starting) {
+        event.emit('show', 'Block index loaded...');
+        this.setState(() => {
+          return {
+            starting: false,
+            running: true,
+            staking: data.staking,
+          };
+        }, () => {
+          event.emit('hide');
+        });
+      }
+    }).catch((err) => {
+      console.error(err);
     });
   }
 
@@ -129,10 +154,30 @@ export default class Sidebar extends Component {
     return null;
   }
 
+  saveAndStopDaemon() {
+    wallet.walletstop();
+    this.setState(() => {
+      return {
+        running: false,
+        staking: false,
+      };
+    });
+  }
+
+  startDaemon() {
+    wallet.walletstart();
+    this.setState(() => {
+      return {
+        starting: true,
+      };
+    });
+    event.emit('show', 'Loading block index...');
+  }
+
   render() {
     let progressBar = 0;
     if (this.state.currentHeight !== 0 && this.state.networkbestblock !== 0) {
-      progressBar = (this.state.currentHeight/this.state.networkbestblock) * 100;
+      progressBar = (this.state.currentHeight / this.state.networkbestblock) * 100;
     }
 
     if (progressBar >= 100 && this.state.currentHeight < this.state.networkbestblock) {
@@ -196,6 +241,36 @@ export default class Sidebar extends Component {
             {this.renderRectRound('/settings')}
           </div>
         </ul>
+        <div className="indicatorContainer">
+          {this.state.running //eslint-disable-line
+            ? <button className="stopStartButton" onClick={this.saveAndStopDaemon}>Stop Daemon</button>
+            : !this.state.starting
+              ? <button className="stopStartButton" onClick={this.startDaemon}>Start Daemon</button>
+              : <button className="stopStartButton" disabled={true}>Daemon starting...</button>
+          }
+          <div className="indicator">
+            <div
+              className={`indicatorCircle
+              ${this.state.running
+                ? '-green'
+                : this.state.starting
+                  ? '-yellow'
+                  : '-red'}`
+              }
+            />
+            <span className="indicatorSubject">Daemon</span>
+          </div>
+          <div className="indicator">
+            <div
+              className={`indicatorCircle
+              ${this.state.staking
+                ? '-green'
+                : '-red'}`
+              }
+            />
+            <span className="indicatorSubject">Staking</span>
+          </div>
+        </div>
         <div className="connections">
           <p>{`${lang.nabBarNetworkInfoSyncing} ${progressBar.toFixed(2)}%`}</p>
           <p>{`( ${lang.nabBarNetworkInfoBlock} ${this.state.currentHeight} ${lang.conjuctionOf} ${this.state.networkbestblock} )`}</p>

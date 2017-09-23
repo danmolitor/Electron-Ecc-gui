@@ -1,35 +1,33 @@
 import Client from 'bitcoin-core';
+
+const homedir = require('os').homedir();
+
+const { exec } = require('child_process');
+
 const client = new Client({
-  host: "127.0.0.1",
+  host: '127.0.0.1',
   port: 19119,
   username: 'yourusername',
   password: 'yourpassword'
-
 });
 
-
 export default class Wallet {
-
-  constructor() {}
-
   help() {
     return new Promise((resolve, reject) => {
       client.help().then((data) => {
-        resolve(data);
-        return '';
+        return resolve(data);
       }).catch((err) => {
-        reject(err);
+        return reject(err);
       });
     });
   }
 
-  command(batch){
+  command(batch) {
     return new Promise((resolve, reject) => {
       client.command(batch).then((responses) => {
-        resolve(responses);
-        return '';
+        return resolve(responses);
       }).catch((err) => {
-        reject(err);
+        return reject(err);
       });
     });
   }
@@ -37,25 +35,23 @@ export default class Wallet {
   getInfo() {
     return new Promise((resolve, reject) => {
       client.getInfo().then((data) => {
-        resolve(data);
-        return '';
+        return resolve(data);
       }).catch((err) => {
-        reject(err);
+        return reject(err);
       });
     });
   }
 
   getTransactions(account, count, skip) {
     return new Promise((resolve, reject) => {
-      var a = account;
-      if (a == null) {
-        a = "*";
+      let a = account;
+      if (a === null) {
+        a = '*';
       }
       client.listTransactions(a, count, skip).then((transactions) => {
-        resolve(transactions);
-        return '';
+        return resolve(transactions);
       }).catch((err) => {
-        reject(err);
+        return reject(err);
       });
     });
   }
@@ -63,16 +59,15 @@ export default class Wallet {
   listAllAccounts() {
     return new Promise((resolve, reject) => {
       client.listReceivedByAddress(0, true).then((addresses) => {
-        resolve(addresses);
-        return '';
+        return resolve(addresses);
       }).catch((err) => {
-        reject(err);
+        return reject(err);
       });
     });
   }
 
   async createNewAddress(nameOpt) {
-    let name = nameOpt || null;
+    const name = nameOpt || null;
     let newAddress;
     if (name === null) {
       newAddress = await client.getNewAddress();
@@ -84,7 +79,7 @@ export default class Wallet {
 
   async sendMoney(sendAddress, amount) {
     const amountNum = parseFloat(amount);
-    const sendAddressStr = '' + sendAddress;
+    const sendAddressStr = `${sendAddress}`;
     await client.sendToAddress(sendAddressStr, amountNum);
   }
 
@@ -139,5 +134,24 @@ export default class Wallet {
     } catch (err) {
       return err;
     }
+  }
+
+  async walletstop() {
+    try {
+      return await client.stop();
+    } catch (err) {
+      return err;
+    }
+  }
+
+  async walletstart() {
+    const path = `${homedir}/Documents/ECCoin/src/ECCoind`;
+    exec(`${path}`, (err, stdout, stderr) => {
+      if (err) {
+        console.error(err);
+      }
+      console.log(stdout);
+      console.log(stderr);
+    });
   }
 }

@@ -40,14 +40,15 @@ class CurrentAddresses extends Component {
     wallet.listAllAccounts().then((data) => {
       this.setState({ existingAddresses: data, requesting: false });
     }).catch((err) => {
-      console.log(err);
+      const errMessage = err.message === 'connect ECONNREFUSED 127.0.0.1:19119'
+        ? 'Daemon not running.'
+        : err.message;
       if (this.state.requesting) {
         self.setState({ requesting: false });
-        event.emit('animate', lang.notificationDaemonDownOrSyncing);
+        event.emit('animate', errMessage);
       }
     });
   }
-
 
   render() {
     const self = this;

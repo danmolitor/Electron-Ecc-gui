@@ -39,8 +39,10 @@ class Security extends Component {
         self.setState({ step: 3 });
       }
     }).catch((err) => {
-      console.log(err);
-      event.emit('animate', lang.notificationDaemonDownOrSyncing);
+      const errMessage = err.message === 'connect ECONNREFUSED 127.0.0.1:19119'
+        ? 'Daemon not running.'
+        : err.message;
+      event.emit('animate', errMessage);
     });
   }
 

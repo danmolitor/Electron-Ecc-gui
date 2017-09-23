@@ -51,9 +51,11 @@ class TransactionTable extends Component {
           event.emit('hide');
         }
       }).catch((err) => {
-        console.log(err);
         if (this.state.requesting) {
-          event.emit('show', err.message);
+          const errMessage = err.message === 'connect ECONNREFUSED 127.0.0.1:19119'
+            ? 'Daemon not running.'
+            : err.message;
+          event.emit('show', errMessage);
           self.setState({ requesting: false });
         }
       });

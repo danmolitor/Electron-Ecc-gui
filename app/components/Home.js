@@ -67,34 +67,32 @@ export default class Home extends Component {
       console.log(data);
       if (self.state.requesting1) {
         let locked = true;
-        let staking = false;
         if (data.unlocked_until !== 0) {
           locked = false;
-        }
-        if (data.staking) {
-          staking = true;
         }
         self.setState({
           locked,
           currentECC: data.balance,
-          staking,
-          stakeECC: data.stake,
-          requesting1: false
+          staking: data.staking,
+          stakeECC: 0,
+          requesting1: false,
         });
       }
       event.emit('hide');
     }).catch((err) => {
-      console.log(err);
       if (self.state.requesting1 && err.message !== 'Method not found') {
-        event.emit('show', lang.notificationDaemonDownOrSyncing);
+        const errMessage = err.message === 'connect ECONNREFUSED 127.0.0.1:19119'
+          ? 'Daemon not running.'
+          : err.message;
         self.setState({
           locked: true,
           currentECC: 0,
           unconfirmedECC: 0,
           stakeECC: 0,
           stakeEarnedEcc: 0,
-          requesting1: false
+          requesting1: false,
         });
+        event.emit('show', errMessage);
       }
     });
   }
@@ -141,7 +139,9 @@ export default class Home extends Component {
   }
 
   changeWalletState() {
-    this.setState({ dialog: true });
+    this.setState(() => {
+      return { dialog: true };
+    });
   }
 
   renderDialogBody() {
@@ -256,27 +256,42 @@ export default class Home extends Component {
               <div className="panel-body">
                 <div>
                   <p className="title">{lang.overviewMyWallet}</p>
-                  <img className="padicon" src={pad} onClick={this.changeWalletState.bind(this)} />
+                  <img className="padicon" src={pad} onClick={this.changeWalletState} />
                 </div>
                 <div className="col-lg-4 col-xs-6 col-md-4">
                   <p className="subtitle">{lang.overviewMyBalance}:</p>
-                  <p className="borderBot"><span className="desc">{this.state.currentECC}</span> <span className="desc2">ecc</span></p>
+                  <p className="borderBot">
+                    <span className="desc">{this.state.currentECC}</span>
+                    <span className="desc2">ecc</span>
+                  </p>
                 </div>
                 <div className="col-lg-4 col-xs-6 col-md-4">
                   <p className="subtitle">{lang.overviewMyStaking}:</p>
-                  <p className="borderBot"><span className="desc">{this.state.stakeECC}</span> <span className="desc2">ecc</span></p>
+                  <p className="borderBot">
+                    <span className="desc">{this.state.stakeECC}</span>
+                    <span className="desc2">ecc</span>
+                  </p>
                 </div>
                 <div className="col-lg-4 col-xs-6 col-md-4">
                   <p className="subtitle">CoinExchange.io:</p>
-                  <p className="borderBot"><span className="desc">{this.state.currentExchangePrice.coinexchange}</span> <span className="desc2">btc</span></p>
+                  <p className="borderBot">
+                    <span className="desc">{this.state.currentExchangePrice.coinexchange}</span>
+                    <span className="desc2">btc</span>
+                  </p>
                 </div>
                 <div className="col-lg-4 col-xs-6 col-md-4">
                   <p className="subtitle">{lang.overviewTotal}:</p>
-                  <p className="borderBot"><span className="desc">{this.state.stakeECC + this.state.currentECC}</span> <span className="desc2">ecc</span></p>
+                  <p className="borderBot">
+                    <span className="desc">{this.state.stakeECC + this.state.currentECC}</span>
+                    <span className="desc2">ecc</span>
+                  </p>
                 </div>
                 <div className="col-lg-4 col-xs-6 col-md-4">
                   <p className="subtitle">{lang.overviewMyUnconfirmed}:</p>
-                  <p className="borderBot"><span className="desc">{this.state.unconfirmedECC}</span> <span className="desc2">ecc</span></p>
+                  <p className="borderBot">
+                    <span className="desc">{this.state.unconfirmedECC}</span>
+                    <span className="desc2">ecc</span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -288,7 +303,11 @@ export default class Home extends Component {
               <div className="panel-body">
                 <p className="title">{lang.overviewMyLatest100Transactions}</p>
                 <div className="selectfield">
-                  <select className="form-control" value={this.state.select} onChange={this.handleChange}>
+                  <select
+                    className="form-control"
+                    value={this.state.select}
+                    onChange={this.handleChange}
+                  >
                     <option value="all">{lang.all}</option>
                     <option value="send">{lang.send}</option>
                     <option value="receive">{lang.received}</option>

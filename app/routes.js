@@ -10,7 +10,7 @@ import TransactionPage from './containers/Pages/TransactionPage';
 import SendPage from './containers/Pages/SendPage';
 import SettingsPage from './containers/Pages/SettingsPage';
 
-export default function Routes({route}){
+export default function Routes({route}) {
   return (
     <App route={route}>
       <Switch>

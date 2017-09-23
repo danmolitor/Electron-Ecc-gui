@@ -47,7 +47,6 @@ class Receive extends Component {
       clipboard.writeText(newAddress);
       self.child_current_addresses.getAllAddresses();
     }).catch((err) => {
-      console.log(err);
       if (this.state.requesting) {
         self.setState({ requesting: false, nameOfNewAddress: '' });
         event.emit('animate', lang.notificationErrorCreatingAdrress);
