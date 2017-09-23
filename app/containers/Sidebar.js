@@ -94,6 +94,15 @@ export default class Sidebar extends Component {
           event.emit('hide');
         });
       }
+      if (data && !this.state.running) {
+        this.setState(() => {
+          return {
+            starting: false,
+            running: true,
+            staking: data.staking,
+          };
+        });
+      }
     }).catch((err) => {
       console.error(err);
     });
@@ -241,13 +250,22 @@ export default class Sidebar extends Component {
             {this.renderRectRound('/settings')}
           </div>
         </ul>
+        <div className="connections">
+          <p>{`${lang.nabBarNetworkInfoSyncing} ${progressBar.toFixed(2)}%`}</p>
+          <p>{`( ${lang.nabBarNetworkInfoBlock} ${this.state.currentHeight} ${lang.conjuctionOf} ${this.state.networkbestblock} )`}</p>
+          <div className="progress custom_progress">
+            <div
+              className="progress-bar progress-bar-success progress-bar-striped"
+              role="progressbar"
+              aria-valuenow="40"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              style={{ width: `${progressBar.toFixed(2)}%`, backgroundColor: '#8DA557' }}
+            />
+          </div>
+          <p>{`${lang.nabBarNetworkInfoActiveConnections}: ${this.state.numpeers}`}</p>
+        </div>
         <div className="indicatorContainer">
-          {this.state.running //eslint-disable-line
-            ? <button className="stopStartButton" onClick={this.saveAndStopDaemon}>Stop Daemon</button>
-            : !this.state.starting
-              ? <button className="stopStartButton" onClick={this.startDaemon}>Start Daemon</button>
-              : <button className="stopStartButton" disabled={true}>Daemon starting...</button>
-          }
           <div className="indicator">
             <div
               className={`indicatorCircle
@@ -270,21 +288,12 @@ export default class Sidebar extends Component {
             />
             <span className="indicatorSubject">Staking</span>
           </div>
-        </div>
-        <div className="connections">
-          <p>{`${lang.nabBarNetworkInfoSyncing} ${progressBar.toFixed(2)}%`}</p>
-          <p>{`( ${lang.nabBarNetworkInfoBlock} ${this.state.currentHeight} ${lang.conjuctionOf} ${this.state.networkbestblock} )`}</p>
-          <div className="progress custom_progress">
-            <div
-              className="progress-bar progress-bar-success progress-bar-striped"
-              role="progressbar"
-              aria-valuenow="40"
-              aria-valuemin="0"
-              aria-valuemax="100"
-              style={{ width: `${progressBar.toFixed(2)}%`, backgroundColor: '#8DA557' }}
-            />
-          </div>
-          <p>{`${lang.nabBarNetworkInfoActiveConnections}: ${this.state.numpeers}`}</p>
+          {this.state.running //eslint-disable-line
+            ? <button className="stopStartButton" onClick={this.saveAndStopDaemon}>Stop Daemon</button>
+            : !this.state.starting
+              ? <button className="stopStartButton" onClick={this.startDaemon}>Start Daemon</button>
+              : <button className="stopStartButton" disabled>Daemon starting...</button>
+          }
         </div>
       </div>
     );
