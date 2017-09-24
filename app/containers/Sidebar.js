@@ -93,8 +93,7 @@ export default class Sidebar extends Component {
         }, () => {
           event.emit('hide');
         });
-      }
-      if (data && !this.state.running) {
+      } else if (data && !this.state.running) {
         this.setState(() => {
           return {
             starting: false,
@@ -104,7 +103,16 @@ export default class Sidebar extends Component {
         });
       }
     }).catch((err) => {
-      console.error(err);
+      const errMessage = err.message === 'connect ECONNREFUSED 127.0.0.1:19119'
+        ? 'Daemon not running.'
+        : err.message;
+      this.setState(() => {
+        return {
+          starting: true,
+        };
+      }, () => {
+        event.emit('show', errMessage);
+      });
     });
   }
 

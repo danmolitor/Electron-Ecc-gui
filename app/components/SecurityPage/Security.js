@@ -325,7 +325,7 @@ class Security extends Component {
             </p>
           </div>
           <button
-            className={`nextButton ${!this.state.passValidated || this.state.changePassRequesting ? '-passButtonDisabled' : ''}`}
+            className={`${!this.state.passValidated || this.state.changePassRequesting ? '-passButtonDisabled' : 'changePassButton '}`}
             disabled={!this.state.passValidated || this.state.changePassRequesting}
             onClick={this.changePassword}
           >

@@ -91,7 +91,7 @@
 
 .backup .nextButton {
   padding: 10px 20px 10px 20px;
-  background-color: #008B45;
+  background-color: #008b45;
   color: #fff;
   font-size: 1.5em;
   text-align: center;
@@ -101,7 +101,40 @@
   margin: 0 auto;
   margin-top: 25px;
   cursor: pointer;
-  border: 2px solid #008B45;
+  border: 2px solid #008b45;
+  transition: background-color 0.1s linear;
+}
+
+.backup .nextButton:hover {
+  background-color: #00ac45;
+}
+
+.backup .nextButton:active {
+  background-color: #009b45;
+}
+
+.backup .changePassButton {
+  padding: 10px 20px 10px 20px;
+  background-color: #008b45;
+  color: #fff;
+  font-size: 1.5em;
+  text-align: center;
+  font-weight: 700;
+  width: 250px;
+  border-radius: 15px;
+  margin: 0 auto;
+  margin-top: 25px;
+  cursor: pointer;
+  border: 2px solid #008b45;
+  transition: background-color 0.1s linear;
+}
+
+.backup .changePassButton:hover {
+  background-color: #00ac45;
+}
+
+.backup .changePassButton:active {
+  background-color: #009b45;
 }
 
 .backup .left {
@@ -151,5 +184,16 @@
 
 .backup .-passButtonDisabled {
   background-color: #ccc;
-  border-color: #ccc;
+  border: 2px solid #ccc;
+  padding: 10px 20px 10px 20px;
+  color: #fff;
+  font-size: 1.5em;
+  text-align: center;
+  font-weight: 700;
+  width: 250px;
+  border-radius: 15px;
+  margin: 0 auto;
+  margin-top: 25px;
+  cursor: pointer;
+  transition: background-color 0.1s linear;
 }
