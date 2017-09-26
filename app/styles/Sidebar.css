@@ -101,6 +101,15 @@
 .stopStartButton {
   width: 100%;
   margin-top: 10px;
+  transition: background-color 0.01s linear;
+}
+
+.stopStartButton:hover {
+  background-color: #f3f3f3;
+}
+
+.stopStartButton:active {
+  background-color: #efefef;
 }
 
 .indicator {

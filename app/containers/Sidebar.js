@@ -103,16 +103,17 @@ export default class Sidebar extends Component {
         });
       }
     }).catch((err) => {
-      const errMessage = err.message === 'connect ECONNREFUSED 127.0.0.1:19119'
-        ? 'Daemon not running.'
-        : err.message;
-      this.setState(() => {
-        return {
-          starting: true,
-        };
-      }, () => {
-        event.emit('show', errMessage);
-      });
+      if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
+        event.emit('show', 'Daemon not running.');
+      } else if (err.message === 'Loading block index...') {
+        this.setState(() => {
+          return {
+            starting: true,
+          };
+        }, () => {
+          event.emit('show', err.message);
+        });
+      }
     });
   }
 
