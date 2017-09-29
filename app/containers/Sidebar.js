@@ -18,6 +18,7 @@ export default class Sidebar extends Component {
       staking: false,
       pathname: props.route.location.pathname,
       active: {
+        config: '',
         default: '',
         send: '',
         receive: '',
@@ -26,6 +27,7 @@ export default class Sidebar extends Component {
         wallet: ''
       },
       icons: {
+        config: '',
         default: '',
         send: '',
         receive: '',
@@ -51,7 +53,7 @@ export default class Sidebar extends Component {
     }, 5000);
   }
 
-  componentWillReceiveProps(props){
+  componentWillReceiveProps(props) {
     // console.log(props.router.location.pathname);
     this.checkStateMenu(props.route.location.pathname);
     this.setState({ pathname: props.route.location.pathname });
@@ -258,8 +260,15 @@ export default class Sidebar extends Component {
             </Link>
             {this.renderRectRound('/settings')}
           </div>
+          <div className={`sidebaritem ${this.state.active.config}`}>
+            <Link to="/config" className={this.state.active.config}>
+              <img className="sidebaricon" src={this.state.icons.config} />
+              Config
+            </Link>
+            {this.renderRectRound('/config')}
+          </div>
         </ul>
-        <div className="connections">
+        <div className="connections sidebar-section-container">
           <p>{`${lang.nabBarNetworkInfoSyncing} ${progressBar.toFixed(2)}%`}</p>
           <p>{`( ${lang.nabBarNetworkInfoBlock} ${this.state.currentHeight} ${lang.conjuctionOf} ${this.state.networkbestblock} )`}</p>
           <div className="progress custom_progress">
@@ -274,8 +283,8 @@ export default class Sidebar extends Component {
           </div>
           <p>{`${lang.nabBarNetworkInfoActiveConnections}: ${this.state.numpeers}`}</p>
         </div>
-        <div className="indicatorContainer">
-          <div className="indicator">
+        <div className="sidebar-section-container">
+          {/* <div className="indicator">
             <div
               className={`indicatorCircle
               ${this.state.running
@@ -286,7 +295,8 @@ export default class Sidebar extends Component {
               }
             />
             <span className="indicatorSubject">Daemon</span>
-          </div>
+          </div> */}
+          {/*
           <div className="indicator">
             <div
               className={`indicatorCircle
@@ -297,6 +307,7 @@ export default class Sidebar extends Component {
             />
             <span className="indicatorSubject">Staking</span>
           </div>
+          */}
           {this.state.running //eslint-disable-line
             ? <button className="stopStartButton" onClick={this.saveAndStopDaemon}>Stop Daemon</button>
             : !this.state.starting

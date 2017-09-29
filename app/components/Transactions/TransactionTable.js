@@ -9,7 +9,6 @@ const event = require('../../utils/eventhandler');
 const lang = traduction();
 const wallet = new Wallet();
 
-
 class TransactionTable extends Component {
   constructor(props) {
     super(props);

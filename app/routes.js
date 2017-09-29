@@ -9,11 +9,13 @@ import ReceivePage from './containers/Pages/ReceivePage';
 import TransactionPage from './containers/Pages/TransactionPage';
 import SendPage from './containers/Pages/SendPage';
 import SettingsPage from './containers/Pages/SettingsPage';
+import ConfigPage from './containers/Pages/ConfigPage';
 
 export default function Routes({route}) {
   return (
     <App route={route}>
       <Switch>
+        <Route path="/config" component={ConfigPage} />
         <Route path="/settings" component={SettingsPage} />
         <Route path="/transaction" component={TransactionPage} />
         <Route path="/about" component={AboutPage} />
