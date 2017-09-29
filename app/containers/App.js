@@ -4,6 +4,8 @@ import Sidebar from './Sidebar';
 
 const event = require('../utils/eventhandler');
 
+const splash = require('../../resources/images/splash-image.png');
+
 let lasttype = 'hide';
 
 event.on('show', (message) => {
@@ -44,9 +46,28 @@ event.on('animate', (message) => {
 // });
 
 export default class App extends Component<Props> {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      splash: true,
+    };
+  }
+  componentDidMount() {
+    console.log("MOUNTING");
+    const self = this;
+    setTimeout(() => {
+      self.setState({ splash: false });
+    }, 3000);
+  }
+  componentWillReceiveProps() {
+  }
   render() {
     return (
       <div id="boot-override">
+        <div className={`splash-image-container${this.state.splash ? '' : ' -disappear'}`}>
+          <img className="splash-image" src={splash} />
+        </div>
         <Sidebar route={this.props.route} />
         <div className="my_wrapper">
           {this.props.children}
