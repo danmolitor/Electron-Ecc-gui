@@ -50,9 +50,9 @@ autoUpdater.on('update-downloaded', (info) => {
   // In your application, you don't need to wait 5 seconds.
   // You could call autoUpdater.quitAndInstall(); immediately
   setTimeout(function() {
-    autoUpdater.quitAndInstall();  
-  }, 5000)
-})
+    autoUpdater.quitAndInstall();
+  }, 5000);
+});
 
 
 let mainWindow = null;
@@ -93,7 +93,7 @@ app.on('ready', async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 1280,
-    height: 670,
+    height: 720,
     minWidth: 1200,
     minHeight: 620,
     icon: iconPath,
@@ -113,8 +113,8 @@ app.on('ready', async () => {
     mainWindow.focus();
   });
 
-  mainWindow.on('minimize',function(event){
-    if(ds != undefined && ds.minimise_to_tray != undefined && ds.minimise_to_tray){
+  mainWindow.on('minimize', function (event) {
+    if(ds !== undefined && ds.minimise_to_tray !== undefined && ds.minimise_to_tray){
       event.preventDefault();
       mainWindow.setSkipTaskbar(true);
       mainWindow.hide();
@@ -122,13 +122,13 @@ app.on('ready', async () => {
     }
   });
 
-  mainWindow.on('show',function(event){
+  mainWindow.on('show', function (event) {
     mainWindow.setSkipTaskbar(false);
   });
 
 
   mainWindow.on('close', function (event) {
-    if(ds != undefined && ds.minimise_on_close != undefined && ds.minimise_on_close){
+    if(ds !== undefined && ds.minimise_on_close !== undefined && ds.minimise_on_close){
       event.preventDefault();
       if(!ds.minimise_to_tray){
         mainWindow.minimize();
@@ -144,34 +144,34 @@ app.on('ready', async () => {
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
-  if(ds == undefined || ds.tray_icon == undefined || !ds.tray_icon){
+  if(ds === undefined || ds.tray_icon === undefined || !ds.tray_icon){
 
     const defaultMenu = [
       {
         label: 'Quit',
         accelerator: 'Command+Q',
-        click: function() {
+        click: function () {
           app.exit(0);
         }
       },
     ];
 
-    
+
     tray = new Tray(iconPath);
     const contextMenu = Menu.buildFromTemplate(defaultMenu);
     tray.setToolTip('Ecc-Wallet');
     tray.setContextMenu(contextMenu);
-  
-    if(process.platform == "darwin"){
-      tray.setImage(iconPath);  
-    }else if(process.platform == "linux"){
-      tray.setImage(iconPath);  
-    }else if(process.platform.indexOf("win") > -1){
-      tray.setImage(iconPath);  
+
+    if (process.platform === "darwin") {
+      tray.setImage(iconPath);
+    } else if(process.platform === "linux") {
+      tray.setImage(iconPath);
+    } else if(process.platform.indexOf("win") > -1) {
+      tray.setImage(iconPath);
     }
 
     tray.on('click', () => {
-      mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show()
+      mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
     });
   }
 

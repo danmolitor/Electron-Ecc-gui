@@ -1,7 +1,5 @@
 import Client from 'bitcoin-core';
 
-const homedir = require('os').homedir();
-
 const { exec } = require('child_process');
 
 const client = new Client({
@@ -153,14 +151,16 @@ export default class Wallet {
     }
   }
 
-  async walletstart() {
-    const path = `${homedir}/Documents/ECCoin/src/ECCoind`;
-    exec(`${path}`, (err, stdout, stderr) => {
+  walletstart(cb) {
+    const path = '../../../eccoind';
+    exec(path, (err, stdout, stderr) => {
       if (err) {
         console.error(err);
       }
-      console.log(stdout);
-      console.log(stderr);
+      if (stderr) {
+        return cb(false);
+      }
+      return cb(true);
     });
   }
 }

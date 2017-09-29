@@ -24,7 +24,8 @@ export default class Sidebar extends Component {
         receive: '',
         transactions: '',
         about: '',
-        wallet: ''
+        wallet: '',
+        downloads: '',
       },
       icons: {
         config: '',
@@ -33,7 +34,8 @@ export default class Sidebar extends Component {
         receive: '',
         transactions: '',
         about: '',
-        wallet: ''
+        wallet: '',
+        downloads: '',
       },
       currentHeight: 0,
       numpeers: 0,
@@ -185,13 +187,18 @@ export default class Sidebar extends Component {
   }
 
   startDaemon() {
-    wallet.walletstart();
-    this.setState(() => {
-      return {
-        starting: true,
-      };
+    wallet.walletstart((result) => {
+      if (result) {
+        this.setState(() => {
+          return {
+            starting: true,
+          };
+        });
+        event.emit('show', 'Loading block index...');
+      } else {
+        console.log('FAILURE');
+      }
     });
-    event.emit('show', 'Loading block index...');
   }
 
   render() {
@@ -264,6 +271,13 @@ export default class Sidebar extends Component {
             <Link to="/config" className={this.state.active.config}>
               <img className="sidebaricon" src={this.state.icons.config} />
               Config
+            </Link>
+            {this.renderRectRound('/config')}
+          </div>
+          <div className={`sidebaritem ${this.state.active.downloads}`}>
+            <Link to="/downloads" className={this.state.active.downloads}>
+              <img className="sidebaricon" src={this.state.icons.downloads} />
+              Downloads
             </Link>
             {this.renderRectRound('/config')}
           </div>

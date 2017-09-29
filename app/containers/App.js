@@ -54,7 +54,6 @@ export default class App extends Component<Props> {
     };
   }
   componentDidMount() {
-    console.log("MOUNTING");
     const self = this;
     setTimeout(() => {
       self.setState({ splash: false });

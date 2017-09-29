@@ -10,11 +10,13 @@ import TransactionPage from './containers/Pages/TransactionPage';
 import SendPage from './containers/Pages/SendPage';
 import SettingsPage from './containers/Pages/SettingsPage';
 import ConfigPage from './containers/Pages/ConfigPage';
+import DownloadsPage from './containers/Pages/DownloadsPage';
 
 export default function Routes({route}) {
   return (
     <App route={route}>
       <Switch>
+        <Route path="/downloads" component={DownloadsPage} />
         <Route path="/config" component={ConfigPage} />
         <Route path="/settings" component={SettingsPage} />
         <Route path="/transaction" component={TransactionPage} />

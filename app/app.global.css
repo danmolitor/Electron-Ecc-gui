@@ -12,6 +12,7 @@
 @import "./styles/Transactions.css";
 @import "./styles/Settings.css";
 @import "./styles/Config.css";
+@import "./styles/Downloads.css";
 
 html,
 body {
