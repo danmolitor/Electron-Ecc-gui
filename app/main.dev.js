@@ -84,6 +84,8 @@ const installExtensions = async () => {
 
 const DownloadManager = require('electron-download-manager');
 
+DownloadManager.register({ downloadFolder: `${app.getPath('home')}/.eccoin-daemon`, filename: 'Eccoind' });
+
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
@@ -179,4 +181,3 @@ app.on('ready', async () => {
   autoUpdater.checkForUpdates();
 });
 
-DownloadManager.register({ downloadFolder: `${app.getPath('home')}/.eccoin-daemon`, filename: 'Eccoind' });
