@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import glob from 'glob';
 import Wallet from '../utils/wallet';
 
 import { traduction } from '../lang/lang';
@@ -112,9 +113,8 @@ export default class Sidebar extends Component {
       }
     }).catch((err) => {
       if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
-        fs.access(`${homedir}/.eccoin-daemon/Eccoind`, fs.constants.F_OK, ((error) => {
-          if (error) {
-            console.log(error);
+        glob(`${homedir}/.eccoin-daemon/Eccoind*`, (error, files) => {
+          if (!files.length) {
             event.emit('show', 'Install daemon via Downloads tab.');
             this.setState(() => {
               return {
@@ -129,7 +129,7 @@ export default class Sidebar extends Component {
               };
             });
           }
-        }));
+        });
       } else if (err.message === 'Loading block index...') {
         this.setState(() => {
           return {

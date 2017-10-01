@@ -153,7 +153,6 @@ export default class Wallet {
   }
 
   walletstart(cb) {
-    console.log(homedir);
     const path = `${homedir}/.eccoin-daemon/Eccoind`;
     if (process.platform === 'linux') {
       exec(`chmod +x ${path} && ${path}`, (err, stdout, stderr) => {
@@ -166,7 +165,6 @@ export default class Wallet {
         return cb(true);
       });
     } else if (process.platform.indexOf('win') > -1) {
-      console.log('there');
       exec(`${path}.exe`, (err, stdout, stderr) => {
         if (err) {
           console.error(err);

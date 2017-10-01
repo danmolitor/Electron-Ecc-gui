@@ -4,6 +4,8 @@ import ReactLoading from 'react-loading';
 import AddressBook from './AddressBook';
 import Wallet from '../../utils/wallet';
 import { traduction } from '../../lang/lang';
+import glob from 'glob';
+
 const fs = require('fs');
 const event = require('../../utils/eventhandler');
 const homedir = require('os').homedir();
@@ -46,13 +48,13 @@ class Send extends Component {
       }
     }).catch((err) => {
       if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
-        fs.access(`${homedir}/.eccoin-daemon/Eccoind`, fs.constants.F_OK, ((error) => {
-          if (error) {
+        glob(`${homedir}/.eccoin-daemon/Eccoind*`, (error, files) => {
+          if (!files.length) {
             event.emit('show', 'Install daemon via Downloads tab.');
           } else {
             event.emit('show', 'Daemon not running.');
           }
-        }));
+        });
       } else {
         event.emit('animate', err.message);
       }

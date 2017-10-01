@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import fs from 'fs';
+import glob from 'glob';
 import os from 'os';
 import $ from 'jquery';
 import Wallet from '../../utils/wallet';
@@ -62,13 +62,13 @@ class Security extends Component {
       }
     }).catch((err) => {
       if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
-        fs.access(`${homedir}/.eccoin-daemon/Eccoind`, fs.constants.F_OK, ((error) => {
-          if (error) {
+        glob(`${homedir}/.eccoin-daemon/Eccoind*`, (error, files) => {
+          if (!files.length) {
             event.emit('show', 'Install daemon via Downloads tab.');
           } else {
             event.emit('show', 'Daemon not running.');
           }
-        }));
+        });
       } else {
         event.emit('animate', err.message);
       }

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Wallet from '../../utils/wallet';
 import { traduction } from '../../lang/lang';
 const homedir = require('os').homedir();
-const fs = require('fs');
+import glob from 'glob';
 const settings = require('electron-settings');
 const event = require('../../utils/eventhandler');
 
@@ -53,13 +53,13 @@ class TransactionTable extends Component {
       }).catch((err) => {
         if (this.state.requesting) {
           if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
-            fs.access(`${homedir}/.eccoin-daemon/Eccoind`, fs.constants.F_OK, ((error) => {
-              if (error) {
+            glob(`${homedir}/.eccoin-daemon/Eccoind*`, (error, files) => {
+              if (!files.length) {
                 event.emit('show', 'Install daemon via Downloads tab.');
               } else {
                 event.emit('show', 'Daemon not running.');
               }
-            }));
+            });
           } else {
             event.emit('animate', err.message);
           }
