@@ -152,15 +152,27 @@ export default class Wallet {
   }
 
   walletstart(cb) {
-    const path = '../../../eccoind';
-    exec(path, (err, stdout, stderr) => {
-      if (err) {
-        console.error(err);
-      }
-      if (stderr) {
-        return cb(false);
-      }
-      return cb(true);
-    });
+    const path = '~/.eccoin-daemon/Eccoind';
+    if (process.platform === 'linux') {
+      exec(`chmod +x ${path} && ${path}`, (err, stdout, stderr) => {
+        if (err) {
+          console.error(err);
+        }
+        if (stderr) {
+          return cb(false);
+        }
+        return cb(true);
+      });
+    } else if (process.platform.indexOf('win') > -1) {
+      exec(path, (err, stdout, stderr) => {
+        if (err) {
+          console.error(err);
+        }
+        if (stderr) {
+          return cb(false);
+        }
+        return cb(true);
+      });
+    }
   }
 }

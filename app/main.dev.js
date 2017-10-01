@@ -10,7 +10,7 @@
  *
  * @flow
  */
-import { app, Tray, Menu, BrowserWindow, nativeImage} from 'electron';
+import { app, Tray, Menu, BrowserWindow, nativeImage, ipcMain } from 'electron';
 import path from 'path';
 import MenuBuilder from './menu';
 const autoUpdater = require("electron-updater").autoUpdater;
@@ -82,6 +82,7 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+const DownloadManager = require('electron-download-manager');
 
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
@@ -128,14 +129,14 @@ app.on('ready', async () => {
 
 
   mainWindow.on('close', function (event) {
-    if(ds !== undefined && ds.minimise_on_close !== undefined && ds.minimise_on_close){
+    if (ds !== undefined && ds.minimise_on_close !== undefined && ds.minimise_on_close) {
       event.preventDefault();
-      if(!ds.minimise_to_tray){
+      if (!ds.minimise_to_tray) {
         mainWindow.minimize();
-      }else{
+      } else {
         mainWindow.hide();
       }
-    }else{
+    } else {
       app.quit();
     }
     return false;
@@ -144,7 +145,7 @@ app.on('ready', async () => {
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
-  if(ds === undefined || ds.tray_icon === undefined || !ds.tray_icon){
+  if (ds === undefined || ds.tray_icon === undefined || !ds.tray_icon) {
 
     const defaultMenu = [
       {
@@ -177,3 +178,5 @@ app.on('ready', async () => {
 
   autoUpdater.checkForUpdates();
 });
+
+DownloadManager.register({ downloadFolder: `${app.getPath('home')}/.eccoin-daemon`, filename: 'Eccoind' });

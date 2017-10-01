@@ -2,7 +2,8 @@ import $ from 'jquery';
 import React, { Component } from 'react';
 import Wallet from '../../utils/wallet';
 import { traduction } from '../../lang/lang';
-
+const homedir = require('os').homedir();
+const fs = require('fs');
 const settings = require('electron-settings');
 const event = require('../../utils/eventhandler');
 
@@ -51,10 +52,17 @@ class TransactionTable extends Component {
         }
       }).catch((err) => {
         if (this.state.requesting) {
-          const errMessage = err.message === 'connect ECONNREFUSED 127.0.0.1:19119'
-            ? 'Daemon not running.'
-            : err.message;
-          event.emit('show', errMessage);
+          if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
+            fs.access(`${homedir}/.eccoin-daemon/Eccoind`, fs.constants.F_OK, ((error) => {
+              if (error) {
+                event.emit('show', 'Install daemon via Downloads tab.');
+              } else {
+                event.emit('show', 'Daemon not running.');
+              }
+            }));
+          } else {
+            event.emit('animate', err.message);
+          }
           self.setState({ requesting: false });
         }
       });

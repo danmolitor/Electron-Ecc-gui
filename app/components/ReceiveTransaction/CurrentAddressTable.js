@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Wallet from '../../utils/wallet';
 import { traduction } from '../../lang/lang';
-
+const homedir = require('os').homedir();
 const event = require('../../utils/eventhandler');
-
+const fs = require('fs');
 const lang = traduction();
 const wallet = new Wallet();
 const { clipboard } = require('electron');
@@ -40,12 +40,19 @@ class CurrentAddresses extends Component {
     wallet.listAllAccounts().then((data) => {
       this.setState({ existingAddresses: data, requesting: false });
     }).catch((err) => {
-      const errMessage = err.message === 'connect ECONNREFUSED 127.0.0.1:19119'
-        ? 'Daemon not running.'
-        : err.message;
+      if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
+        fs.access(`${homedir}/.eccoin-daemon/Eccoind`, fs.constants.F_OK, ((error) => {
+          if (error) {
+            event.emit('show', 'Install daemon via Downloads tab.');
+          } else {
+            event.emit('show', 'Daemon not running.');
+          }
+        }));
+      } else {
+        event.emit('animate', err.message);
+      }
       if (this.state.requesting) {
         self.setState({ requesting: false });
-        event.emit('animate', errMessage);
       }
     });
   }

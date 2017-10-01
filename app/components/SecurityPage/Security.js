@@ -4,7 +4,7 @@ import os from 'os';
 import $ from 'jquery';
 import Wallet from '../../utils/wallet';
 import { traduction } from '../../lang/lang';
-
+const homedir = require('os').homedir();
 const event = require('../../utils/eventhandler');
 const remote = require('electron').remote;
 
@@ -61,10 +61,17 @@ class Security extends Component {
         self.setState({ step: 1 });
       }
     }).catch((err) => {
-      const errMessage = err.message === 'connect ECONNREFUSED 127.0.0.1:19119'
-        ? 'Daemon not running.'
-        : err.message;
-      event.emit('animate', errMessage);
+      if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
+        fs.access(`${homedir}/.eccoin-daemon/Eccoind`, fs.constants.F_OK, ((error) => {
+          if (error) {
+            event.emit('show', 'Install daemon via Downloads tab.');
+          } else {
+            event.emit('show', 'Daemon not running.');
+          }
+        }));
+      } else {
+        event.emit('animate', err.message);
+      }
     });
   }
 

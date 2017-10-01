@@ -3,9 +3,9 @@ import TransactionTable from './Transactions/TransactionTable';
 import Wallet from '../utils/wallet';
 import { exchanges } from '../utils/exchange';
 import { traduction } from '../lang/lang';
-
+const fs = require('fs');
 const event = require('../utils/eventhandler');
-
+const homedir = require('os').homedir();
 const lang = traduction();
 const wallet = new Wallet();
 
@@ -81,9 +81,17 @@ export default class Home extends Component {
       event.emit('hide');
     }).catch((err) => {
       if (self.state.requesting1 && err.message !== 'Method not found') {
-        const errMessage = err.message === 'connect ECONNREFUSED 127.0.0.1:19119'
-          ? 'Daemon not running.'
-          : err.message;
+        if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
+          fs.access(`${homedir}/.eccoin-daemon/Eccoind`, fs.constants.F_OK, ((error) => {
+            if (error) {
+              event.emit('show', 'Install daemon via Downloads tab.');
+            } else {
+              event.emit('show', 'Daemon not running.');
+            }
+          }));
+        } else {
+          event.emit('animate', err.message);
+        }
         self.setState({
           locked: true,
           currentECC: 0,
@@ -92,7 +100,6 @@ export default class Home extends Component {
           stakeEarnedEcc: 0,
           requesting1: false,
         });
-        event.emit('show', errMessage);
       }
     });
   }
@@ -107,7 +114,6 @@ export default class Home extends Component {
       self.setState({ currentExchangePrice });
       event.emit('hide');
     }).catch((err) => {
-      console.log(err);
       event.emit('show', lang.notificationExchangeInfo);
     });
 

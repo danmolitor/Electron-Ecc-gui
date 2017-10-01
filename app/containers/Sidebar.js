@@ -4,6 +4,8 @@ import Wallet from '../utils/wallet';
 
 import { traduction } from '../lang/lang';
 
+const homedir = require('os').homedir();
+const fs = require('fs');
 const event = require('../utils/eventhandler');
 
 const lang = traduction();
@@ -39,7 +41,8 @@ export default class Sidebar extends Component {
       },
       currentHeight: 0,
       numpeers: 0,
-      networkbestblock: 0
+      networkbestblock: 0,
+      daemonInstalled: false,
     };
 
     this.saveAndStopDaemon = this.saveAndStopDaemon.bind(this);
@@ -53,6 +56,7 @@ export default class Sidebar extends Component {
     this.timerInfo = setInterval(() => {
       self.infoUpdate();
     }, 5000);
+
   }
 
   componentWillReceiveProps(props) {
@@ -87,7 +91,7 @@ export default class Sidebar extends Component {
 
     wallet.getInfo().then((data) => {
       if (data && this.state.starting) {
-        event.emit('show', 'Block index loaded...');
+        event.emit('animate', 'Block index loaded...');
         this.setState(() => {
           return {
             starting: false,
@@ -108,7 +112,25 @@ export default class Sidebar extends Component {
       }
     }).catch((err) => {
       if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
-        event.emit('show', 'Daemon not running.');
+        fs.access(`${homedir}/.eccoin-daemon/Eccoind`, fs.constants.F_OK, ((error) => {
+          if (error) {
+            console.log(error);
+            event.emit('show', 'Install daemon via Downloads tab.');
+            this.setState(() => {
+              return {
+                daemonInstalled: false,
+              };
+            });
+          } else {
+            console.log('here');
+            event.emit('show', 'Daemon not running.');
+            this.setState(() => {
+              return {
+                daemonInstalled: true,
+              };
+            });
+          }
+        }));
       } else if (err.message === 'Loading block index...') {
         this.setState(() => {
           return {
@@ -196,7 +218,7 @@ export default class Sidebar extends Component {
         });
         event.emit('show', 'Loading block index...');
       } else {
-        console.log('FAILURE');
+        event.emit('show', 'Daemon is not in current working directory.');
       }
     });
   }
@@ -325,7 +347,14 @@ export default class Sidebar extends Component {
           {this.state.running //eslint-disable-line
             ? <button className="stopStartButton" onClick={this.saveAndStopDaemon}>Stop Daemon</button>
             : !this.state.starting
-              ? <button className="stopStartButton" onClick={this.startDaemon}>Start Daemon</button>
+              ?
+                <button
+                  className="stopStartButton"
+                  onClick={this.startDaemon}
+                  disabled={!this.state.daemonInstalled}
+                >
+                  {this.state.daemonInstalled ? 'Start Daemon' : 'Daemon not installed'}
+                </button>
               : <button className="stopStartButton" disabled>Daemon starting...</button>
           }
         </div>
