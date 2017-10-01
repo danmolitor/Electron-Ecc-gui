@@ -88,7 +88,13 @@ const installExtensions = async () => {
 
 const DownloadManager = require('electron-download-manager');
 
-DownloadManager.register({ downloadFolder: `${app.getPath('home')}/.eccoin-daemon`, filename: 'Eccoind' });
+if (process.platform === 'darwin') {
+  DownloadManager.register({ downloadFolder: `${app.getPath('home')}/.eccoin-daemon`, filename: 'Eccoind' });
+} else if (process.platform === 'linux') {
+  DownloadManager.register({ downloadFolder: `${app.getPath('home')}/.eccoin-daemon`, filename: 'Eccoind' });
+} else if (process.platform.indexOf('win') > -1) {
+  DownloadManager.register({ downloadFolder: `${app.getPath('home')}/.eccoin-daemon`, filename: 'Eccoind.exe' });
+}
 
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
