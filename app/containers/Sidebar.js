@@ -212,6 +212,7 @@ export default class Sidebar extends Component {
     this.setState(() => {
       return {
         running: false,
+        starting: false,
         staking: false,
       };
     });
