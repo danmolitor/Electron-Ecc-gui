@@ -1,5 +1,6 @@
 import Client from 'bitcoin-core';
 
+const homedir = require('os').homedir();
 const { exec } = require('child_process');
 
 const client = new Client({
@@ -152,7 +153,8 @@ export default class Wallet {
   }
 
   walletstart(cb) {
-    const path = '~/.eccoin-daemon/Eccoind';
+    console.log(homedir);
+    const path = `${homedir}/.eccoin-daemon/Eccoind`;
     if (process.platform === 'linux') {
       exec(`chmod +x ${path} && ${path}`, (err, stdout, stderr) => {
         if (err) {
@@ -164,7 +166,8 @@ export default class Wallet {
         return cb(true);
       });
     } else if (process.platform.indexOf('win') > -1) {
-      exec(path, (err, stdout, stderr) => {
+      console.log('there');
+      exec(`${path}.exe`, (err, stdout, stderr) => {
         if (err) {
           console.error(err);
         }

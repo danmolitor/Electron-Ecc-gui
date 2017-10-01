@@ -1,53 +1,41 @@
 import React, { Component } from 'react';
 
-const electron = require('electron');
+const { ipcRenderer } = require('electron');
 
 const event = require('../../utils/eventhandler');
 
 export default class Downloads extends Component {
-  downloadLinux64 = () => {
-    electron.remote.require('electron-download-manager').download({ url: 'https://www.ecc.network/downloads/updates/eccoind-linux64', filename: 'Eccoind'}, (err, url) => {
+  componentWillMount() {
+    ipcRenderer.on('daemon-downloaded', (e, err) => {
       if (err) {
         event.emit('hide');
         event.emit('animate', err);
       } else {
         event.emit('hide');
-        event.emit('animate', 'Daemon downloaded.');
+        event.emit('animate', 'Daemon downloaded and ready to start.');
       }
     });
+  }
+
+  componentWillUnmount() {
+    ipcRenderer.removeAllListeners('daemon-downloaded');
+  }
+  downloadLinux64 = () => {
+    event.emit('animate', 'Daemon downloading...');
+    ipcRenderer.send('daemon-download', { url: 'https://www.ecc.network/downloads/updates/eccoind-linux64', filename: 'Eccoind' });
   };
   downloadLinux32 = () => {
-    electron.remote.require('electron-download-manager').download({ url: 'https://www.ecc.network/downloads/updates/eccoind-linux32', filename: 'Eccoind' }, (err, url) => {
-      if (err) {
-        event.emit('hide');
-        event.emit('animate', err);
-      } else {
-        event.emit('hide');
-        event.emit('animate', 'Daemon downloaded.');
-      }
-    });
+    event.emit('animate', 'Daemon downloading...');
+    ipcRenderer.send('daemon-download', { url: 'https://www.ecc.network/downloads/updates/eccoind-linux32', filename: 'Eccoind' });
+
   };
   downloadWindows64 = () => {
-    electron.remote.require('electron-download-manager').download({ url: 'https://www.ecc.network/downloads/updates/eccoind-64.exe', filename: 'Eccoind' }, (err, url) => {
-      if (err) {
-        event.emit('hide');
-        event.emit('animate', err);
-      } else {
-        event.emit('hide');
-        event.emit('animate', 'Daemon downloaded.');
-      }
-    });
+    event.emit('animate', 'Daemon downloading...');
+    ipcRenderer.send('daemon-download', { url: 'https://www.ecc.network/downloads/updates/eccoind-64.exe', filename: 'Eccoind' });
   };
   downloadWindows32 = () => {
-    electron.remote.require('electron-download-manager').download({ url: 'https://www.ecc.network/downloads/updates/eccoind-32.exe', filename: 'Eccoind' }, (err, url) => {
-      if (err) {
-        event.emit('hide');
-        event.emit('animate', err);
-      } else {
-        event.emit('hide');
-        event.emit('animated', 'Daemon downloaded.');
-      }
-    });
+    event.emit('animate', 'Daemon downloading...');
+    ipcRenderer.send('daemon-download', { url: 'https://www.ecc.network/downloads/updates/eccoind-32.exe', filename: 'Eccoind' });
   };
   render() {
     return (

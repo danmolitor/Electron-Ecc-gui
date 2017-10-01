@@ -122,7 +122,6 @@ export default class Sidebar extends Component {
               };
             });
           } else {
-            console.log('here');
             event.emit('show', 'Daemon not running.');
             this.setState(() => {
               return {
@@ -154,6 +153,8 @@ export default class Sidebar extends Component {
     aLinks.security = '';
     aLinks.about = '';
     aLinks.settings = '';
+    aLinks.config = '';
+    aLinks.downloads = '';
 
     aIcons.default = require('../../resources/images/overview1.ico');
     aIcons.send = require('../../resources/images/send1.ico');
@@ -162,6 +163,8 @@ export default class Sidebar extends Component {
     aIcons.security = require('../../resources/images/backup1.ico');
     aIcons.about = require('../../resources/images/about1.ico');
     aIcons.settings = require('../../resources/images/settings1.ico');
+    aIcons.config = require('../../resources/images/settings1.ico');
+    aIcons.downloads = require('../../resources/images/settings1.ico');
 
     if (pathname === '/') {
       aLinks.default = 'sidebaritem_active';
@@ -184,6 +187,12 @@ export default class Sidebar extends Component {
     } else if (pathname === '/settings') {
       aLinks.settings = 'sidebaritem_active';
       aIcons.settings = require('../../resources/images/settings2.ico');
+    } else if (pathname === '/config') {
+      aLinks.config = 'sidebaritem_active';
+      aIcons.config = require('../../resources/images/settings2.ico');
+    } else if (pathname === '/downloads') {
+      aLinks.downloads = 'sidebaritem_active';
+      aIcons.downloads = require('../../resources/images/settings2.ico');
     }
 
     this.setState({ active: aLinks, icons: aIcons });
@@ -211,14 +220,14 @@ export default class Sidebar extends Component {
   startDaemon() {
     wallet.walletstart((result) => {
       if (result) {
+        event.emit('show', 'Loading block index...');
         this.setState(() => {
           return {
             starting: true,
           };
         });
-        event.emit('show', 'Loading block index...');
       } else {
-        event.emit('show', 'Daemon is not in current working directory.');
+        event.emit('show', 'Daemon is not in correct directory.');
       }
     });
   }
@@ -301,7 +310,7 @@ export default class Sidebar extends Component {
               <img className="sidebaricon" src={this.state.icons.downloads} />
               Downloads
             </Link>
-            {this.renderRectRound('/config')}
+            {this.renderRectRound('/downloads')}
           </div>
         </ul>
         <div className="connections sidebar-section-container">
