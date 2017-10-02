@@ -31,11 +31,11 @@ export default class Downloads extends Component {
   };
   downloadWindows64 = () => {
     event.emit('animate', 'Daemon downloading...');
-    ipcRenderer.send('daemon-download', { url: 'https://www.ecc.network/downloads/updates/eccoind-64.exe', filename: 'Eccoind' });
+    ipcRenderer.send('daemon-download', { url: 'https://www.ecc.network/downloads/updates/eccoind-win64.exe', filename: 'Eccoind' });
   };
   downloadWindows32 = () => {
     event.emit('animate', 'Daemon downloading...');
-    ipcRenderer.send('daemon-download', { url: 'https://www.ecc.network/downloads/updates/eccoind-32.exe', filename: 'Eccoind' });
+    ipcRenderer.send('daemon-download', { url: 'https://www.ecc.network/downloads/updates/eccoind-win32.exe', filename: 'Eccoind' });
   };
   render() {
     return (
