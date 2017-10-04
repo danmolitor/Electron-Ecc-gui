@@ -64,7 +64,6 @@ export default class Home extends Component {
     this.setState({ requesting1: true });
 
     wallet.getInfo().then((data) => {
-      console.log(data);
       if (self.state.requesting1) {
         let locked = true;
         if (data.unlocked_until !== 0) {
@@ -89,8 +88,6 @@ export default class Home extends Component {
               event.emit('show', 'Daemon not running.');
             }
           });
-        } else {
-          event.emit('animate', err.message);
         }
         self.setState({
           locked: true,
@@ -126,7 +123,7 @@ export default class Home extends Component {
           event.emit('hide');
         }
       }).catch((err) => {
-        console.log(err);
+        console.log(err, 'here');
         event.emit('show', lang.notificationExchangeInfo);
       });
     }, 5000);

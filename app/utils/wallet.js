@@ -1,7 +1,7 @@
 import Client from 'bitcoin-core';
 
 const homedir = require('os').homedir();
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
 
 const client = new Client({
   host: '127.0.0.1',
@@ -165,15 +165,27 @@ export default class Wallet {
         return cb(true);
       });
     } else if (process.platform.indexOf('win') > -1) {
-      exec(`${path}.exe`, (err, stdout, stderr) => {
-        if (err) {
-          console.error(err);
-        }
-        if (stderr) {
-          return cb(false);
-        }
+      runExecForWindows(`${path}.exe`, 1000).then(() => {
         return cb(true);
+      })
+      .catch(() => {
+        cb(false);
       });
     }
   }
+}
+
+function runExecForWindows(cmd, timeout, cb) {
+  return new Promise((resolve, reject) => {
+    exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve('program exited without an error');
+      }
+    });
+    setTimeout(() => {
+      resolve('program still running');
+    }, timeout);
+  });
 }

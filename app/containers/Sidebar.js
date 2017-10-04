@@ -18,6 +18,7 @@ export default class Sidebar extends Component {
     this.state = {
       starting: false,
       running: false,
+      stopping: false,
       staking: false,
       pathname: props.route.location.pathname,
       active: {
@@ -57,13 +58,16 @@ export default class Sidebar extends Component {
     this.timerInfo = setInterval(() => {
       self.infoUpdate();
     }, 5000);
-
   }
 
   componentWillReceiveProps(props) {
     // console.log(props.router.location.pathname);
     this.checkStateMenu(props.route.location.pathname);
     this.setState({ pathname: props.route.location.pathname });
+  }
+
+  componentDidUpdate() {
+    console.log(this.state);
   }
 
   componentWillUnmount() {
@@ -113,31 +117,33 @@ export default class Sidebar extends Component {
       }
     }).catch((err) => {
       if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
-        glob(`${homedir}/.eccoin-daemon/Eccoind*`, (error, files) => {
-          if (!files.length) {
-            event.emit('show', 'Install daemon via Downloads tab.');
-            this.setState(() => {
-              return {
-                daemonInstalled: false,
-              };
-            });
-          } else {
-            event.emit('show', 'Daemon not running.');
-            this.setState(() => {
-              return {
-                daemonInstalled: true,
-              };
-            });
-          }
-        });
-      } else if (err.message === 'Loading block index...') {
         this.setState(() => {
           return {
-            starting: true,
+            stopping: false,
           };
-        }, () => {
-          event.emit('show', err.message);
         });
+        if (!this.state.starting) {
+          glob(`${homedir}/.eccoin-daemon/Eccoind*`, (error, files) => {
+            if (!files.length) {
+              event.emit('show', 'Install daemon via Downloads tab.');
+              this.setState(() => {
+                return {
+                  daemonInstalled: false,
+                };
+              });
+            } else if (files.length) {
+              event.emit('show', 'Daemon not running.');
+              this.setState(() => {
+                return {
+                  daemonInstalled: true,
+                  running: false,
+                };
+              });
+            } else {
+              event.emit('show', err.message);
+            }
+          });
+        }
       }
     });
   }
@@ -208,26 +214,43 @@ export default class Sidebar extends Component {
   }
 
   saveAndStopDaemon() {
-    wallet.walletstop();
+    event.emit('animate', 'Stopping daemon...');
     this.setState(() => {
       return {
-        running: false,
-        starting: false,
-        staking: false,
+        stopping: true,
       };
     });
+    wallet.walletstop()
+      .then(() => {
+        this.setState(() => {
+          return {
+            running: false,
+            starting: false,
+            staking: false,
+          };
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   startDaemon() {
+    this.setState(() => {
+      return {
+        starting: true,
+      };
+    });
+    event.emit('animate', 'Starting daemon...');
     wallet.walletstart((result) => {
       if (result) {
         event.emit('show', 'Loading block index...');
+      } else {
         this.setState(() => {
           return {
-            starting: true,
+            starting: false,
           };
         });
-      } else {
         event.emit('show', 'Daemon is not in correct directory.');
       }
     });
@@ -355,7 +378,9 @@ export default class Sidebar extends Component {
           </div>
           */}
           {this.state.running //eslint-disable-line
-            ? <button className="stopStartButton" onClick={this.saveAndStopDaemon}>Stop Daemon</button>
+            ? !this.state.stopping
+              ? <button className="stopStartButton" onClick={this.saveAndStopDaemon}>Stop Daemon</button>
+              : <button className="stopStartButton" disabled>Daemon stopping...</button>
             : !this.state.starting
               ?
                 <button
