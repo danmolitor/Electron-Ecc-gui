@@ -155,17 +155,14 @@ export default class Wallet {
   walletstart(cb) {
     const path = `${homedir}/.eccoin-daemon/Eccoind`;
     if (process.platform === 'linux') {
-      exec(`chmod +x ${path} && ${path}`, (err, stdout, stderr) => {
-        if (err) {
-          console.error(err);
-        }
-        if (stderr) {
-          return cb(false);
-        }
+      runExec(`chmod +x ${path} && ${path}`, 1000).then(() => {
         return cb(true);
+      })
+      .catch(() => {
+        cb(false);
       });
     } else if (process.platform.indexOf('win') > -1) {
-      runExecForWindows(`${path}.exe`, 1000).then(() => {
+      runExec(`${path}.exe`, 1000).then(() => {
         return cb(true);
       })
       .catch(() => {
@@ -175,7 +172,7 @@ export default class Wallet {
   }
 }
 
-function runExecForWindows(cmd, timeout, cb) {
+function runExec(cmd, timeout, cb) {
   return new Promise((resolve, reject) => {
     exec(cmd, (error, stdout, stderr) => {
       if (error) {

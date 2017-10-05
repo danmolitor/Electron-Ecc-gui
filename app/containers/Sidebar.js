@@ -66,10 +66,6 @@ export default class Sidebar extends Component {
     this.setState({ pathname: props.route.location.pathname });
   }
 
-  componentDidUpdate() {
-    console.log(this.state);
-  }
-
   componentWillUnmount() {
     clearInterval(this.timerInfo);
   }
@@ -117,11 +113,15 @@ export default class Sidebar extends Component {
       }
     }).catch((err) => {
       if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
-        this.setState(() => {
-          return {
-            stopping: false,
-          };
-        });
+        if (this.state.stopping) {
+          this.setState(() => {
+            return {
+              stopping: false,
+              running: false,
+            };
+          });
+          event.emit('hide');
+        }
         if (!this.state.starting) {
           glob(`${homedir}/.eccoin-daemon/Eccoind*`, (error, files) => {
             if (!files.length) {
@@ -214,7 +214,9 @@ export default class Sidebar extends Component {
   }
 
   saveAndStopDaemon() {
-    event.emit('animate', 'Stopping daemon...');
+    if (process.platform.indexOf('win') > -1) {
+      event.emit('animate', 'Stopping daemon...');
+    }
     this.setState(() => {
       return {
         stopping: true,
@@ -224,7 +226,6 @@ export default class Sidebar extends Component {
       .then(() => {
         this.setState(() => {
           return {
-            running: false,
             starting: false,
             staking: false,
           };
