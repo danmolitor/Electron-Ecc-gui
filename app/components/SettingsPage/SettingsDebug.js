@@ -3,6 +3,8 @@ import os from 'os';
 import Wallet from '../../utils/wallet';
 import { traduction } from '../../lang/lang';
 
+const version = require('project-version');
+
 const event = require('../../utils/eventhandler');
 const remote = require('electron').remote;
 
@@ -51,12 +53,16 @@ class SettingsDebug extends Component {
         testnet: data.testnet,
         version: data.version,
       });
-    }).catch((error) => {
+    }).catch((err) => {
       self.setState({
         testnet: false,
         version: '',
       });
-      event.emit('animate', lang.notificationDaemonDownOrSyncing);
+      if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
+        event.emit('animate', 'Daemon not running.');
+      } else {
+        event.emit('animate', err.message);
+      }
     });
 
     wallet.getblockcount().then((height) => {
@@ -263,7 +269,7 @@ class SettingsDebug extends Component {
                 <p className="desc">Version:</p>
               </div>
               <div className="col-md-4">
-                <p className="desc">0.1.4</p>
+                <p className="desc">{version}</p>
               </div>
             </div>
             <p className="subtitle">ECCoin</p>

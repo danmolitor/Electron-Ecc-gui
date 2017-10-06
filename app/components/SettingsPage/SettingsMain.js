@@ -38,17 +38,21 @@ class SettingsMain extends Component {
     this.getWalletInfo();
   }
 
-  getWalletInfo(){
+  getWalletInfo() {
     const self = this;
 
     wallet.getInfo().then((data) => {
       self.setState({ tx_fee: data.paytxfee });
     }).catch((err) => {
-
+      if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
+        event.emit('animate', 'Daemon not running.');
+      } else {
+        event.emit('animate', err.message);
+      }
     });
   }
 
-  loadSettings(){
+  loadSettings() {
 
     if (settings.has('settings.main')) {
       const ds = settings.get('settings.main');
