@@ -123,7 +123,6 @@ export default class Home extends Component {
           event.emit('hide');
         }
       }).catch((err) => {
-        console.log(err, 'here');
         event.emit('show', lang.notificationExchangeInfo);
       });
     }, 5000);

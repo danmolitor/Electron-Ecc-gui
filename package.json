@@ -1,7 +1,7 @@
 {
   "name": "ecc-gui",
   "productName": "Ecc-GUI",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "Electron application providing the graphical user interface for the E-Currency Coin Wallet",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 node --trace-warnings ./test/runTests.js",

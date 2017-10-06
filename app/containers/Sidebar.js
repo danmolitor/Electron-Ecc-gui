@@ -42,6 +42,7 @@ export default class Sidebar extends Component {
         downloads: '',
       },
       currentHeight: 0,
+      headers: 0,
       numpeers: 0,
       networkbestblock: 0,
       daemonInstalled: false,
@@ -91,13 +92,18 @@ export default class Sidebar extends Component {
     });
 
     wallet.getInfo().then((data) => {
+      this.setState(() => {
+        return {
+          headers: data.headers,
+          staking: data.staking,
+        };
+      });
       if (data && this.state.starting) {
         event.emit('animate', 'Block index loaded...');
         this.setState(() => {
           return {
             starting: false,
             running: true,
-            staking: data.staking,
           };
         }, () => {
           event.emit('hide');
@@ -107,7 +113,6 @@ export default class Sidebar extends Component {
           return {
             starting: false,
             running: true,
-            staking: data.staking,
           };
         });
       }
@@ -340,6 +345,7 @@ export default class Sidebar extends Component {
         </ul>
         <div className="connections sidebar-section-container">
           <p>{`${lang.nabBarNetworkInfoSyncing} ${progressBar.toFixed(2)}%`}</p>
+          <p>{`( Total Headers Synced: ${this.state.headers} )`}</p>
           <p>{`( ${lang.nabBarNetworkInfoBlock} ${this.state.currentHeight} ${lang.conjuctionOf} ${this.state.networkbestblock} )`}</p>
           <div className="progress custom_progress">
             <div
@@ -354,30 +360,6 @@ export default class Sidebar extends Component {
           <p>{`${lang.nabBarNetworkInfoActiveConnections}: ${this.state.numpeers}`}</p>
         </div>
         <div className="sidebar-section-container">
-          {/* <div className="indicator">
-            <div
-              className={`indicatorCircle
-              ${this.state.running
-                ? '-green'
-                : this.state.starting
-                  ? '-yellow'
-                  : '-red'}`
-              }
-            />
-            <span className="indicatorSubject">Daemon</span>
-          </div> */}
-          {/*
-          <div className="indicator">
-            <div
-              className={`indicatorCircle
-              ${this.state.staking
-                ? '-green'
-                : '-red'}`
-              }
-            />
-            <span className="indicatorSubject">Staking</span>
-          </div>
-          */}
           {this.state.running //eslint-disable-line
             ? !this.state.stopping
               ? <button className="stopStartButton" onClick={this.saveAndStopDaemon}>Stop Daemon</button>

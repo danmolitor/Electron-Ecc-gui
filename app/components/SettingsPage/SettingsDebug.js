@@ -257,6 +257,15 @@ class SettingsDebug extends Component {
         <div>
           <p className="btn_console" onClick={this.switchLayout.bind(this)}>{lang.console}</p>
           <div className="col-md-12">
+            <p className="subtitle">Lynx</p>
+            <div className="row">
+              <div className="col-md-4">
+                <p className="desc">Version:</p>
+              </div>
+              <div className="col-md-4">
+                <p className="desc">0.1.4</p>
+              </div>
+            </div>
             <p className="subtitle">ECCoin</p>
             <div className="row">
               <div className="col-md-4">
