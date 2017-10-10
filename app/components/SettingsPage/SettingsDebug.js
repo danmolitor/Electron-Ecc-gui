@@ -3,8 +3,6 @@ import os from 'os';
 import Wallet from '../../utils/wallet';
 import { traduction } from '../../lang/lang';
 
-const version = require('project-version');
-
 const event = require('../../utils/eventhandler');
 const remote = require('electron').remote;
 
@@ -269,7 +267,7 @@ class SettingsDebug extends Component {
                 <p className="desc">Version:</p>
               </div>
               <div className="col-md-4">
-                <p className="desc">{version}</p>
+                <p className="desc">0.1.4</p>
               </div>
             </div>
             <p className="subtitle">ECCoin</p>
