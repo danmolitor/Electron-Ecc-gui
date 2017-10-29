@@ -30,43 +30,124 @@ export default class Config extends Component {
   }
 
   getConfigInfo() {
-    fs.readFile(`${homedir}/.eccoin/eccoin.conf`, 'utf8', (err, data) => {
-      if (err) {
-        return console.log(err);
-      }
+    if (process.platform === 'linux') {
+      fs.readFile(`${homedir}/.eccoin/eccoin.conf`, 'utf8', (err, data) => {
+        if (err) {
+          return console.log(err);
+        }
 
-      if (/staking=[0-9]/g.test(data)) {
-        if (/staking=1/g.test(data)) {
-          this.setState({ staking: true });
+        if (/staking=[0-9]/g.test(data)) {
+          if (/staking=1/g.test(data)) {
+            this.setState({ staking: true });
+          } else {
+            this.setState({ staking: false });
+          }
         } else {
           this.setState({ staking: false });
         }
-      } else {
-        this.setState({ staking: false });
-      }
+      });
+    } else if (process.platform.indexOf('win') > -1) {
+      if (fs.existsSync('C:/ProgramData/ECC/ecc.conf')) {
+        fs.readFile('C:/ProgramData/ECC/ecc.conf', 'utf8', (err, data) => {
+          if (err) {
+            return console.log(err);
+          }
 
-      // fs.writeFile(someFile, result, 'utf8', function (err) {
-      //   if (err) return console.log(err);
-      // });
-    });
+          if (/staking=[0-9]/g.test(data)) {
+            if (/staking=1/g.test(data)) {
+              this.setState({ staking: true });
+            } else {
+              this.setState({ staking: false });
+            }
+          } else {
+            this.setState({ staking: false });
+          }
+        });
+      } else if (fs.existsSync(`${homedir}/appdata/roaming/eccoin/eccoin.conf`)) {
+        fs.readFile(`${homedir}/appdata/roaming/eccoin/eccoin.conf`, 'utf8', (err, data) => {
+          if (err) {
+            return console.log(err);
+          }
+
+          if (/staking=[0-9]/g.test(data)) {
+            if (/staking=1/g.test(data)) {
+              this.setState({ staking: true });
+            } else {
+              this.setState({ staking: false });
+            }
+          } else {
+            this.setState({ staking: false });
+          }
+        });
+      }
+    }
   }
 
   toggleStaking(event) {
     event.persist();
-    fs.readFile(`${homedir}/.eccoin/eccoin.conf`, 'utf8', (err, data) => {
-      if (err) {
-        return console.log(err);
-      }
-
-      const result = data.replace(/staking=[0-9]/g, `staking=${event.target.value}`);
-
-      fs.writeFile(`${homedir}/.eccoin/eccoin.conf`, result, 'utf8', (err) => {
+    if (process.platform === 'linux') {
+      fs.readFile(`${homedir}/.eccoin/eccoin.conf`, 'utf8', (err, data) => {
         if (err) {
           return console.log(err);
         }
-        this.getConfigInfo();
+
+        const result = data.replace(/staking=[0-9]/g, `staking=${event.target.value}`);
+
+        fs.writeFile(`${homedir}/.eccoin/eccoin.conf`, result, 'utf8', (err) => {
+          if (err) {
+            return console.log(err);
+          }
+          this.getConfigInfo();
+        });
       });
-    });
+    } else if (process.platform.indexOf('win') > -1) {
+      if (fs.existsSync('C:/ProgramData/ECC/ecc.conf')) {
+        fs.readFile('C:/ProgramData/ECC/ecc.conf', 'utf8', (err, data) => {
+          if (err) {
+            return console.log(err);
+          }
+
+          const result = data.replace(/staking=[0-9]/g, `staking=${event.target.value}`);
+
+          fs.writeFile('C:/ProgramData/ECC/ecc.conf', result, 'utf8', (err) => {
+            if (err) {
+              return console.log(err);
+            }
+            this.getConfigInfo();
+          });
+        });
+      } else if (fs.existsSync(`${homedir}/appdata/roaming/eccoin/eccoin.conf`)) {
+        fs.readFile(`${homedir}/appdata/roaming/eccoin/eccoin.conf`, 'utf8', (err, data) => {
+          if (err) {
+            return console.log(err);
+          }
+
+          if (/staking=[0-9]/g.test(data)) {
+            console.log('STAKING EXISTS');
+            const result = data.replace(/staking=[0-9]/g, `staking=${event.target.value}`);
+
+            console.log(result);
+
+            fs.writeFile(`${homedir}/appdata/roaming/eccoin/eccoin.conf`, result, 'utf8', (err) => {
+              if (err) {
+                return console.log(err);
+              }
+              this.getConfigInfo();
+            });
+          } else {
+            console.log('STAKING NOT FOUND');
+            const result = `${data}staking=${event.target.value}`;
+
+            fs.writeFile(`${homedir}/appdata/roaming/eccoin/eccoin.conf`, result, 'utf8', (err) => {
+              if (err) {
+                return console.log(err);
+              }
+              this.getConfigInfo();
+            });
+          }
+        });
+      }
+    }
   }
 
   render() {

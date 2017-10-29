@@ -36,13 +36,13 @@ export default class Home extends Component {
   }
 
   componentDidMount() {
-    this.exchangeInterval();
+    // this.exchangeInterval();
     this.getWalletInfo();
     this.setTimerFunctions();
   }
 
   componentWillUnmount() {
-    clearInterval(this.exInterval);
+   // clearInterval(this.exInterval);
     clearInterval(this.timerInfo);
     this.state.requesting1 = false;
     this.state.requesting2 = false;
@@ -274,13 +274,13 @@ export default class Home extends Component {
                     <span className="desc2">ecc</span>
                   </p>
                 </div>
-                <div className="col-lg-4 col-xs-6 col-md-4">
+                {/* <div className="col-lg-4 col-xs-6 col-md-4">
                   <p className="subtitle">CoinExchange.io:</p>
                   <p className="borderBot">
                     <span className="desc">{this.state.currentExchangePrice.coinexchange}</span>
                     <span className="desc2">btc</span>
                   </p>
-                </div>
+                </div> */}
                 <div className="col-lg-4 col-xs-6 col-md-4">
                   <p className="subtitle">{lang.overviewTotal}:</p>
                   <p className="borderBot">
