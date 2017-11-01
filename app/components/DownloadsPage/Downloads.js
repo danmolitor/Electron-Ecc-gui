@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import fs from 'fs';
+
+const request = require('request-promise-native');
+
+// axios.defaults.adapter = require('axios/lib/adapters/http');
+
+const homedir = require('os').homedir();
 
 const { ipcRenderer } = require('electron');
 
@@ -11,8 +18,25 @@ export default class Downloads extends Component {
         event.emit('hide');
         event.emit('animate', err);
       } else {
-        event.emit('hide');
-        event.emit('animate', 'Daemon downloaded and ready to start.');
+        const opts = {
+          url: 'https://api.github.com/repos/Greg-Griffith/eccoin/releases/latest',
+          headers: {
+            'User-Agent': 'request',
+          },
+        };
+        return request(opts)
+          .then((response) => {
+            const path = `${homedir}/.eccoin-daemon`;
+            const parsed = JSON.parse(response);
+            const version = parsed.name;
+            fs.writeFile(`${path}/daemon-version.txt`, version, (err) => {
+              if (err) throw err;
+              ipcRenderer.send('daemon-version-created');
+              event.emit('hide');
+              event.emit('animate', 'Daemon downloaded and ready to start.');
+            });
+          })
+          .catch(error => console.log(error));
       }
     });
   }

@@ -5,9 +5,12 @@ import Wallet from '../utils/wallet';
 
 import { traduction } from '../lang/lang';
 
+const request = require('request-promise-native');
 const homedir = require('os').homedir();
 const fs = require('fs');
 const event = require('../utils/eventhandler');
+
+const { ipcRenderer } = require('electron');
 
 const lang = traduction();
 const wallet = new Wallet();
@@ -46,10 +49,12 @@ export default class Sidebar extends Component {
       numpeers: 0,
       networkbestblock: 0,
       daemonInstalled: false,
+      newVersionAvailable: false,
     };
 
     this.saveAndStopDaemon = this.saveAndStopDaemon.bind(this);
     this.startDaemon = this.startDaemon.bind(this);
+    this.checkDaemonVersion = this.checkDaemonVersion.bind(this);
   }
 
   componentDidMount() {
@@ -59,6 +64,12 @@ export default class Sidebar extends Component {
     this.timerInfo = setInterval(() => {
       self.infoUpdate();
     }, 5000);
+
+    this.checkDaemonVersion();
+
+    ipcRenderer.once('daemon-version-updated', (e, err) => {
+      this.checkDaemonVersion();
+    });
   }
 
   componentWillReceiveProps(props) {
@@ -98,6 +109,7 @@ export default class Sidebar extends Component {
           staking: data.staking,
         };
       });
+
       if (data && this.state.starting) {
         event.emit('animate', 'Block index loaded...');
         this.setState(() => {
@@ -149,6 +161,92 @@ export default class Sidebar extends Component {
             }
           });
         }
+      }
+    });
+
+    const path = `${homedir}/.eccoin-daemon`;
+
+    fs.access(`${path}/daemon-version.txt`, (err) => {
+      if (err) {
+        console.log(err);
+        this.setState(() => {
+          return {
+            newVersionAvailable: true,
+          };
+        });
+      } else {
+        fs.readFile(`${path}/daemon-version.txt`, 'utf8', (err, data) => {
+          if (err) {
+            throw err;
+          } else {
+            const version = data.split(' ')[1];
+
+            const opts = {
+              url: 'https://api.github.com/repos/Greg-Griffith/eccoin/releases/latest',
+              headers: {
+                'User-Agent': 'request',
+              },
+            };
+            request(opts)
+              .then((response) => {
+                const path = `${homedir}/.eccoin-daemon`;
+                const parsed = JSON.parse(response);
+                const githubVersion = parsed.name.split(' ')[1];
+                if (version !== githubVersion) {
+                  this.setState(() => {
+                    return {
+                      newVersionAvailable: true,
+                    };
+                  });
+                }
+              })
+              .catch(error => console.log(error));
+          }
+        });
+      }
+    });
+  }
+
+  checkDaemonVersion() {
+    const path = `${homedir}/.eccoin-daemon`;
+
+    fs.access(`${path}/daemon-version.txt`, (err) => {
+      if (err) {
+        console.log(err);
+        this.setState(() => {
+          return {
+            newVersionAvailable: true,
+          };
+        });
+      } else {
+        fs.readFile(`${path}/daemon-version.txt`, 'utf8', (err, data) => {
+          if (err) {
+            throw err;
+          } else {
+            const version = data.split(' ')[1];
+
+            const opts = {
+              url: 'https://api.github.com/repos/Greg-Griffith/eccoin/releases/latest',
+              headers: {
+                'User-Agent': 'request',
+              },
+            };
+            request(opts)
+              .then((response) => {
+                const path = `${homedir}/.eccoin-daemon`;
+                const parsed = JSON.parse(response);
+                const githubVersion = parsed.name.split(' ')[1];
+                if (version !== githubVersion) {
+                  this.setState(() => {
+                    return {
+                      newVersionAvailable: true,
+                    };
+                  });
+                }
+              })
+              .catch(error => console.log(error));
+          }
+        });
       }
     });
   }
@@ -239,6 +337,7 @@ export default class Sidebar extends Component {
       .catch(err => {
         console.log(err);
       });
+    this.checkDaemonVersion();
   }
 
   startDaemon() {
@@ -260,6 +359,7 @@ export default class Sidebar extends Component {
         event.emit('show', 'Daemon is not in correct directory.');
       }
     });
+    this.checkDaemonVersion();
   }
 
   render() {
@@ -374,6 +474,10 @@ export default class Sidebar extends Component {
                   {this.state.daemonInstalled ? 'Start Daemon' : 'Daemon not installed'}
                 </button>
               : <button className="stopStartButton" disabled>Daemon starting...</button>
+          }
+          {this.state.newVersionAvailable
+            ? <div className="new-version">New Version Available</div>
+            : null
           }
         </div>
       </div>

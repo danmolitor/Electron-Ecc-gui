@@ -201,3 +201,6 @@ ipcMain.on('daemon-download', (e, args) => {
   });
 });
 
+ipcMain.on('daemon-version-created', (e, args) => {
+  e.sender.send('daemon-version-updated');
+});
