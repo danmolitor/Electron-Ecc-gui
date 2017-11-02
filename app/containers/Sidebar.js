@@ -64,10 +64,14 @@ export default class Sidebar extends Component {
     this.timerInfo = setInterval(() => {
       self.infoUpdate();
     }, 5000);
+    this.timerCheckDaemonVersion = setInterval(() => {
+      this.checkDaemonVersion();
+    }, 600000);
 
     this.checkDaemonVersion();
 
     ipcRenderer.once('daemon-version-updated', (e, err) => {
+      console.log('HERE HERE HERE');
       this.checkDaemonVersion();
     });
   }
@@ -80,14 +84,15 @@ export default class Sidebar extends Component {
 
   componentWillUnmount() {
     clearInterval(this.timerInfo);
+    clearInterval(this.timerCheckDaemonVersion);
   }
 
   infoUpdate() {
     const self = this;
     wallet.getblockcount().then((height) => {
-      self.setState({ currentHeight: height });
+      self.setState({currentHeight: height});
     }).catch((error) => {
-      self.setState({ currentHeight: 0 });
+      self.setState({currentHeight: 0});
     });
 
     wallet.getpeerinfo().then((peers) => {
@@ -97,9 +102,9 @@ export default class Sidebar extends Component {
           bestHeight = peers[i]['startingheight'];
         }
       }
-      self.setState({ networkbestblock: bestHeight, numpeers: peers.length });
+      self.setState({networkbestblock: bestHeight, numpeers: peers.length});
     }).catch((error) => {
-      self.setState({ networkbestblock: 0, numpeers: 0 });
+      self.setState({networkbestblock: 0, numpeers: 0});
     });
 
     wallet.getInfo().then((data) => {
@@ -163,48 +168,6 @@ export default class Sidebar extends Component {
         }
       }
     });
-
-    const path = `${homedir}/.eccoin-daemon`;
-
-    fs.access(`${path}/daemon-version.txt`, (err) => {
-      if (err) {
-        console.log(err);
-        this.setState(() => {
-          return {
-            newVersionAvailable: true,
-          };
-        });
-      } else {
-        fs.readFile(`${path}/daemon-version.txt`, 'utf8', (err, data) => {
-          if (err) {
-            throw err;
-          } else {
-            const version = data.split(' ')[1];
-
-            const opts = {
-              url: 'https://api.github.com/repos/Greg-Griffith/eccoin/releases/latest',
-              headers: {
-                'User-Agent': 'request',
-              },
-            };
-            request(opts)
-              .then((response) => {
-                const path = `${homedir}/.eccoin-daemon`;
-                const parsed = JSON.parse(response);
-                const githubVersion = parsed.name.split(' ')[1];
-                if (version !== githubVersion) {
-                  this.setState(() => {
-                    return {
-                      newVersionAvailable: true,
-                    };
-                  });
-                }
-              })
-              .catch(error => console.log(error));
-          }
-        });
-      }
-    });
   }
 
   checkDaemonVersion() {
@@ -237,9 +200,16 @@ export default class Sidebar extends Component {
                 const parsed = JSON.parse(response);
                 const githubVersion = parsed.name.split(' ')[1];
                 if (version !== githubVersion) {
+                  console.log('NOT EQUAL');
                   this.setState(() => {
                     return {
                       newVersionAvailable: true,
+                    };
+                  });
+                } else {
+                  this.setState(() => {
+                    return {
+                      newVersionAvailable: false,
                     };
                   });
                 }
@@ -337,7 +307,6 @@ export default class Sidebar extends Component {
       .catch(err => {
         console.log(err);
       });
-    this.checkDaemonVersion();
   }
 
   startDaemon() {
@@ -359,7 +328,6 @@ export default class Sidebar extends Component {
         event.emit('show', 'Daemon is not in correct directory.');
       }
     });
-    this.checkDaemonVersion();
   }
 
   render() {
