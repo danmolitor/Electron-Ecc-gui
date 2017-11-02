@@ -51,7 +51,7 @@ class AddressBook extends Component {
     wallet.validate(this.state.address).then((isAddressValid) => {
         if (isAddressValid.isvalid) {
           const tt = low.get('friends').find({ address: this.state.address }).value();
-          if (tt !== null) {
+          if (tt === null) {
             event.emit('animate', lang.addressExists);
           } else {
             const name = this.state.name;
@@ -99,7 +99,7 @@ class AddressBook extends Component {
         <div>
           <div className="input-group">
             <span className="input-group-btn" style={{verticalAlign: 'middle'}}>
-              <button className="greenBtn btn btn-success btn-raised" type="button" onClick={this._handleToggleAddAddress}>{lang.sendAddAddress}</button>
+              <button className="greenBtn btn btn-success btn-raised" type="button" onClick={this._handleToggleAddAddress}>Add to Address Book</button>
             </span>
             <div>
               <input className="inpuText form-control" onChange={this._handleInput} value={this.state.name} name="name" placeholder={lang.sendNameOptional} type="text" />
