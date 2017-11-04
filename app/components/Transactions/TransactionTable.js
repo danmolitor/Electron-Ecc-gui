@@ -48,22 +48,10 @@ class TransactionTable extends Component {
       wallet.getTransactions(null, countTras, 0).then((data) => {
         if (this.state.requesting) {
           self.setState({ transactions: data, requesting: false });
-          event.emit('hide');
         }
       }).catch((err) => {
-        if (this.state.requesting) {
-          if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
-            glob(`${homedir}/.eccoin-daemon/Eccoind*`, (error, files) => {
-              if (!files.length) {
-                event.emit('show', 'Install daemon via Downloads tab.');
-              } else {
-                event.emit('show', 'Daemon not running.');
-              }
-            });
-          } else {
-            event.emit('animate', err.message);
-          }
-          self.setState({ requesting: false });
+        if (err.message !== 'Loading block index...' && err.message !== 'connect ECONNREFUSED 127.0.0.1:19119') {
+          event.emit('animate', err.message);
         }
       });
     }

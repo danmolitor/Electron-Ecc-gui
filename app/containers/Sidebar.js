@@ -71,7 +71,6 @@ export default class Sidebar extends Component {
     this.checkDaemonVersion();
 
     ipcRenderer.once('daemon-version-updated', (e, err) => {
-      console.log('HERE HERE HERE');
       this.checkDaemonVersion();
     });
   }
@@ -166,6 +165,8 @@ export default class Sidebar extends Component {
             }
           });
         }
+      } else {
+        event.emit('show', err.message);
       }
     });
   }
@@ -315,9 +316,10 @@ export default class Sidebar extends Component {
         starting: true,
       };
     });
-    event.emit('animate', 'Starting daemon...');
+    event.emit('show', 'Starting daemon...');
     wallet.walletstart((result) => {
       if (result) {
+        event.emit('hide');
         event.emit('show', 'Loading block index...');
       } else {
         this.setState(() => {

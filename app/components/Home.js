@@ -80,14 +80,8 @@ export default class Home extends Component {
       event.emit('hide');
     }).catch((err) => {
       if (self.state.requesting1 && err.message !== 'Method not found') {
-        if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
-          glob(`${homedir}/.eccoin-daemon/Eccoind*`, (error, files) => {
-            if (!files.length) {
-              event.emit('show', 'Install daemon via Downloads tab.');
-            } else {
-              event.emit('show', 'Daemon not running.');
-            }
-          });
+        if (err.message !== 'Loading block index...' && err.message !== 'connect ECONNREFUSED 127.0.0.1:19119') {
+          event.emit('animate', err.message);
         }
         self.setState({
           locked: true,
@@ -102,31 +96,31 @@ export default class Home extends Component {
   }
 
 
-  exchangeInterval() {
-    const self = this;
-
-    exchanges().getLastPrices().then((data) => {
-      const currentExchangePrice = self.state.currentExchangePrice;
-      currentExchangePrice.coinexchange = data['CoinExchange.io'];
-      self.setState({ currentExchangePrice });
-      event.emit('hide');
-    }).catch((err) => {
-      event.emit('show', lang.notificationExchangeInfo);
-    });
-
-    self.exInterval = setInterval(() => {
-      exchanges().getLastPrices().then((data) => {
-        const currentExchangePrice = self.state.currentExchangePrice;
-        currentExchangePrice.coinexchange = data['CoinExchange.io'];
-        if (self.refs.coinexio) {
-          self.setState({ currentExchangePrice });
-          event.emit('hide');
-        }
-      }).catch((err) => {
-        event.emit('show', lang.notificationExchangeInfo);
-      });
-    }, 5000);
-  }
+  // exchangeInterval() {
+  //   const self = this;
+  //
+  //   exchanges().getLastPrices().then((data) => {
+  //     const currentExchangePrice = self.state.currentExchangePrice;
+  //     currentExchangePrice.coinexchange = data['CoinExchange.io'];
+  //     self.setState({ currentExchangePrice });
+  //     event.emit('hide');
+  //   }).catch((err) => {
+  //     event.emit('show', lang.notificationExchangeInfo);
+  //   });
+  //
+  //   self.exInterval = setInterval(() => {
+  //     exchanges().getLastPrices().then((data) => {
+  //       const currentExchangePrice = self.state.currentExchangePrice;
+  //       currentExchangePrice.coinexchange = data['CoinExchange.io'];
+  //       if (self.refs.coinexio) {
+  //         self.setState({ currentExchangePrice });
+  //         event.emit('hide');
+  //       }
+  //     }).catch((err) => {
+  //       event.emit('show', lang.notificationExchangeInfo);
+  //     });
+  //   }, 5000);
+  // }
 
   handleChange(event) {
     this.setState({ select: event.target.value });

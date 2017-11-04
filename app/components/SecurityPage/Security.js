@@ -69,7 +69,7 @@ class Security extends Component {
             event.emit('show', 'Daemon not running.');
           }
         });
-      } else {
+      } else if (err.message !== 'Loading block index...' && err.message !== 'connect ECONNREFUSED 127.0.0.1:19119') {
         event.emit('animate', err.message);
       }
     });

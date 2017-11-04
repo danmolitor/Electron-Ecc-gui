@@ -46,7 +46,7 @@ class SettingsMain extends Component {
     }).catch((err) => {
       if (err.message === 'connect ECONNREFUSED 127.0.0.1:19119') {
         event.emit('animate', 'Daemon not running.');
-      } else {
+      } else if (!err.message === 'Loading block index...') {
         event.emit('animate', err.message);
       }
     });

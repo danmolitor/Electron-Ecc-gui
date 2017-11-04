@@ -48,7 +48,7 @@ class CurrentAddresses extends Component {
             event.emit('show', 'Daemon not running.');
           }
         });
-      } else {
+      } else if (err.message !== 'Loading block index...') {
         event.emit('animate', err.message);
       }
       if (this.state.requesting) {

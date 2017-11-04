@@ -26,7 +26,6 @@ export default class Config extends Component {
 
   componentDidMount() {
     this.getConfigInfo();
-    console.log(homedir);
   }
 
   getConfigInfo() {
@@ -88,14 +87,14 @@ export default class Config extends Component {
     if (process.platform === 'linux') {
       fs.readFile(`${homedir}/.eccoin/eccoin.conf`, 'utf8', (err, data) => {
         if (err) {
-          return console.log(err);
+          console.log(err);
         }
 
         const result = data.replace(/staking=[0-9]/g, `staking=${event.target.value}`);
 
         fs.writeFile(`${homedir}/.eccoin/eccoin.conf`, result, 'utf8', (err) => {
           if (err) {
-            return console.log(err);
+            console.log(err);
           }
           this.getConfigInfo();
         });
@@ -104,14 +103,14 @@ export default class Config extends Component {
       if (fs.existsSync('C:/ProgramData/ECC/ecc.conf')) {
         fs.readFile('C:/ProgramData/ECC/ecc.conf', 'utf8', (err, data) => {
           if (err) {
-            return console.log(err);
+            console.log(err);
           }
 
           const result = data.replace(/staking=[0-9]/g, `staking=${event.target.value}`);
 
           fs.writeFile('C:/ProgramData/ECC/ecc.conf', result, 'utf8', (err) => {
             if (err) {
-              return console.log(err);
+              console.log(err);
             }
             this.getConfigInfo();
           });
@@ -119,7 +118,7 @@ export default class Config extends Component {
       } else if (fs.existsSync(`${homedir}/appdata/roaming/eccoin/eccoin.conf`)) {
         fs.readFile(`${homedir}/appdata/roaming/eccoin/eccoin.conf`, 'utf8', (err, data) => {
           if (err) {
-            return console.log(err);
+            console.log(err);
           }
 
           if (/staking=[0-9]/g.test(data)) {
@@ -130,7 +129,7 @@ export default class Config extends Component {
 
             fs.writeFile(`${homedir}/appdata/roaming/eccoin/eccoin.conf`, result, 'utf8', (err) => {
               if (err) {
-                return console.log(err);
+                console.log(err);
               }
               this.getConfigInfo();
             });
@@ -140,7 +139,7 @@ export default class Config extends Component {
 
             fs.writeFile(`${homedir}/appdata/roaming/eccoin/eccoin.conf`, result, 'utf8', (err) => {
               if (err) {
-                return console.log(err);
+                console.log(err);
               }
               this.getConfigInfo();
             });
